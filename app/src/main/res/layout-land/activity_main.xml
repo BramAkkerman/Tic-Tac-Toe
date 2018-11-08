@@ -115,14 +115,6 @@
 
     </android.support.v7.widget.GridLayout>
 
-    <Button
-        android:id="@+id/reset"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="center"
-        android:onClick="resetClicked"
-        android:text="Reset" />
-
     </LinearLayout>
 
     <TextView
@@ -141,4 +133,12 @@
         android:textColor="@android:color/black"
         android:textSize="36sp"
         android:visibility="invisible" />
+
+    <Button
+        android:id="@+id/reset"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="right|center_vertical"
+        android:onClick="resetClicked"
+        android:text="Reset" />
 </FrameLayout>
