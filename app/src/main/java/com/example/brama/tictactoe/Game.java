@@ -29,6 +29,7 @@ public class Game implements Serializable {
         if (tile != TileState.BLANK) {
             return TileState.INVALID;
         } else {
+            movesPlayed += 1;
             if (playerOneTurn) {
                 playerOneTurn = false;
                 board[row][column] = TileState.CROSS;
@@ -57,7 +58,12 @@ public class Game implements Serializable {
         return GameState.IN_PROGRESS;
     }
 
-    public void incrMovesPlayed() {
-        movesPlayed += 1;
+    public TileState checkTile(int row, int column) {
+        if (board[row][column] == TileState.CIRCLE)
+            return TileState.CIRCLE;
+        else if (board[row][column] == TileState.CROSS)
+            return TileState.CROSS;
+        else
+            return TileState.BLANK;
     }
 }

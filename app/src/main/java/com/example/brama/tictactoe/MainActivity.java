@@ -13,16 +13,57 @@ public class MainActivity extends AppCompatActivity {
     Game game;
     GridLayout userInterface;
     GameState won = GameState.IN_PROGRESS;
+    TextView wonText;
+    int count;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        game = new Game();
         userInterface = findViewById(R.id.gridLayout);
+        wonText = findViewById(R.id.gameState);
+        if (savedInstanceState != null) {
+            Log.d("blabla", "gamecrash?");
+            if (savedInstanceState.getString("won") == "player_one") {
+                Log.d("blabla", "gamecrash2.0?");
+                wonText.setText("Player 1 has won!");
+                wonText.setVisibility(View.VISIBLE);
+                won = GameState.PLAYER_ONE;
+                Log.d("blabla", "gamecrash3.0?");
+            } else if (savedInstanceState.getString("won") == "player_two") {
+                wonText.setText("Player 2 has won!");
+                wonText.setVisibility(View.VISIBLE);
+                won = GameState.PLAYER_TWO;
+            } else {
+                game = (Game) savedInstanceState.getSerializable("game");
+                for (int i = 0; i < 3; i++) {
+                    for (int j = 0; j < 3; j++) {
+                        TileState state = game.checkTile(i, j);
+                        Button tile = (Button) userInterface.getChildAt(3 * i + j);
+                        checkTileState(state, tile, i, j);
+                        if (won == GameState.DRAW) {
+                            wonText.setText("It's a draw!");
+                            wonText.setVisibility(View.VISIBLE);
+                        }
+                    }
+                }
+            }
+        } else
+            game = new Game();
+        count = userInterface.getChildCount();
+    }
+
+    public void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState); // always call super
+        outState.putSerializable("game",game);
+        if (won == GameState.PLAYER_ONE)
+            outState.putString("won","player_one");
+        else if (won == GameState.PLAYER_TWO)
+            outState.putString("won","player_two");
     }
 
     public void tileClicked(View view) {
+        wonText = findViewById(R.id.gameState);
         if (won == GameState.IN_PROGRESS) {
             int id = view.getId();
             int[] rowAndColumn = rowColumn(id);
@@ -31,47 +72,46 @@ public class MainActivity extends AppCompatActivity {
 
             Button tile = (Button) view;
             TileState state = game.choose(row, column);
-            TextView wonText = findViewById(R.id.gameState);
 
-            switch (state) {
-                case CROSS:
-                    tile.setText("X");
-                    tile.setEnabled(false);
-                    game.incrMovesPlayed();
-                    won = game.won(TileState.CROSS, row, column);
-                    if (won == GameState.PLAYER_ONE) {
-                        wonText.setText("Player 1 has won!");
-                        wonText.setVisibility(View.VISIBLE);
-                        int count = userInterface.getChildCount();
-                        for (int i=0;i<count;i++) {
-                            Button btn = (Button) userInterface.getChildAt(i);
-                            btn.setEnabled(false);
-                        }
-                    }
-                    break;
-                case CIRCLE:
-                    tile.setText("O");
-                    tile.setEnabled(false);
-                    game.incrMovesPlayed();
-                    won = game.won(TileState.CIRCLE, row, column);
-                    if (won == GameState.PLAYER_TWO) {
-                        wonText.setText("Player 2 has won!");
-                        wonText.setVisibility(View.VISIBLE);
-                        int count = userInterface.getChildCount();
-                        for (int i=0;i<count;i++) {
-                            Button btn = (Button) userInterface.getChildAt(i);
-                            btn.setEnabled(false);
-                        }
-                    }
-                    break;
-                case INVALID:
-                    break;
-            }
+            checkTileState(state, tile, row, column);
 
             if (won == GameState.DRAW) {
                 wonText.setText("It's a draw!");
                 wonText.setVisibility(View.VISIBLE);
             }
+        }
+    }
+
+    public void checkTileState(TileState state, Button tile, int row, int column) {
+        switch (state) {
+            case CROSS:
+                tile.setText("X");
+                tile.setEnabled(false);
+                won = game.won(TileState.CROSS, row, column);
+                if (won == GameState.PLAYER_ONE) {
+                    wonText.setText("Player 1 has won!");
+                    wonText.setVisibility(View.VISIBLE);
+                    for (int i = 0; i < count; i++) {
+                        Button btn = (Button) userInterface.getChildAt(i);
+                        btn.setEnabled(false);
+                    }
+                }
+                break;
+            case CIRCLE:
+                tile.setText("O");
+                tile.setEnabled(false);
+                won = game.won(TileState.CIRCLE, row, column);
+                if (won == GameState.PLAYER_TWO) {
+                    wonText.setText("Player 2 has won!");
+                    wonText.setVisibility(View.VISIBLE);
+                    for (int i = 0; i < count; i++) {
+                        Button btn = (Button) userInterface.getChildAt(i);
+                        btn.setEnabled(false);
+                    }
+                }
+                break;
+            case INVALID:
+                break;
         }
     }
 
