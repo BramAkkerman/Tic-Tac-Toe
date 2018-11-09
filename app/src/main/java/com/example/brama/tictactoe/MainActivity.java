@@ -23,13 +23,10 @@ public class MainActivity extends AppCompatActivity {
         userInterface = findViewById(R.id.gridLayout);
         wonText = findViewById(R.id.gameState);
         if (savedInstanceState != null) {
-            Log.d("blabla", "gamecrash?");
             if (savedInstanceState.getString("won") == "player_one") {
-                Log.d("blabla", "gamecrash2.0?");
                 wonText.setText("Player 1 has won!");
                 wonText.setVisibility(View.VISIBLE);
                 won = GameState.PLAYER_ONE;
-                Log.d("blabla", "gamecrash3.0?");
             } else if (savedInstanceState.getString("won") == "player_two") {
                 wonText.setText("Player 2 has won!");
                 wonText.setVisibility(View.VISIBLE);
